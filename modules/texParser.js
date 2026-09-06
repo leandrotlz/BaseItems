@@ -1,4 +1,4 @@
-export function texParser(rawText, parseInfo) {
+export function texParser(rawText, parseInfo, pStrings) {
     let cursor = 0;
     const tokens = [];
     for (const line of rawText.split(/\r?\n|\r/)) {
@@ -26,7 +26,7 @@ export function texParser(rawText, parseInfo) {
         return rest.join(' ');
     }
 
-    function parseStruct(info) {
+    function parseStruct(info, pStrings) {
         let result = {};
         const rules = {};
         for (const [key, rule] of Object.entries(info)) {
@@ -54,13 +54,18 @@ export function texParser(rawText, parseInfo) {
             if (rule.type === 'STRUCT') {
                 if (rule.named) {
                     const structName = consumeToken();
-                    const structData = parseStruct(rule.parseInfo);
+                    const structData = parseStruct(rule.parseInfo, pStrings);
                     value = { Name: structName, ...structData };
                 } else {
-                    value = parseStruct(rule.parseInfo);
+                    value = parseStruct(rule.parseInfo, pStrings);
                 }
             } else if (rule.type === 'PSTRING') {
                 value = consumeLine().replace(/^"|"$/g, '');
+                if (pStrings[value]) {
+                    value = pStrings[value];
+                } else {
+                    console.log("Unknown pstring: " + value);
+                }
             } else if (rule.type === 'STRING') {
                 value = consumeLine();
             } else if (rule.type === 'ARRAY') {
@@ -80,7 +85,7 @@ export function texParser(rawText, parseInfo) {
         return result;
     }
 
-    const output = parseStruct(parseInfo);
+    const output = parseStruct(parseInfo, pStrings);
     const rootKeys = Object.keys(output);
     return rootKeys.length === 1 && Array.isArray(output[rootKeys[0]]) ? output[rootKeys[0]] : output;
 }

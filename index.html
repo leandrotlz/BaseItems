@@ -7,8 +7,10 @@
 </head>
 <body>
     <h1>Base Items Parser</h1>
+    <input id="dictionary-file-input" type="file" accept=".ms" class="hidden">
     <input id="details-file-input" type="file" accept=".details" class="hidden">
-    <button id="import-details-file">Import Details File (.details)</button>
+    <button id="import-dictionary-file">Import Dictionary File (.ms)</button>
+    <button id="import-details-file" disabled>Import Details File (.details)</button>
     <h2>JSON Preview</h2>
     <pre id="json-preview"></pre>
     <script src="baseitems.js" type="module"></script>
