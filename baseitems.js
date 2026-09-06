@@ -1,12 +1,12 @@
 import { texParser, ParseDetailDict } from './modules/texParser.js';
 import { msParser } from './modules/msParser.js';
+import { tabManager } from './modules/tabManager.js';
 
 const dictionaryFileInput = document.getElementById('dictionary-file-input');
 const detailsFileInput = document.getElementById('details-file-input');
 const importDictionaryBtn = document.getElementById('import-dictionary-file');
 const importDetailsBtn = document.getElementById('import-details-file');
 const exportJsonBtn = document.getElementById('export-json-file');
-const jsonPreview = document.getElementById('json-preview');
 
 let pstrings = {}
 let details = {}
@@ -28,7 +28,10 @@ dictionaryFileInput.addEventListener('change', (event) => {
     reader.onload = (e) => {
         const rawContent = e.target.result;
         pstrings = msParser(rawContent);
-        jsonPreview.textContent = JSON.stringify(pstrings, null, 2);
+        
+        const output = JSON.stringify(pstrings, null, 2);
+        tabManager.addTab('dictionary-tab', file.name, output);
+
         importDetailsBtn.removeAttribute("disabled");
     };
 
@@ -44,7 +47,10 @@ detailsFileInput.addEventListener('change', (event) => {
     reader.onload = (e) => {
         const rawContent = e.target.result;
         details = texParser(rawContent, ParseDetailDict, pstrings);
-        jsonPreview.textContent = JSON.stringify(details, null, 2);
+        
+        const output = JSON.stringify(details, null, 2);
+        tabManager.addTab('details-tab', file.name, output);
+
         exportJsonBtn.removeAttribute("disabled");
     };
 

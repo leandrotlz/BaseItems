@@ -52,7 +52,7 @@
 }
 
 body {
-    margin-top: 100px;
+    margin: 85px 0px 0px 0px;
     background-color: var(--md-sys-color-background);
     color: var(--md-sys-color-on-background);
     font-family: "Segoe UI", Roboto, sans-serif;
@@ -152,6 +152,91 @@ body {
 
 .ribbon-btn:disabled svg {
     opacity: 0.38;
+}
+
+.tab-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.tab-bar {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    overflow-x: auto;
+    position: sticky;
+    top: 80px;
+    z-index: 10;
+    background-color: var(--md-sys-color-background);
+}
+
+.tab-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tab-button:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+}
+
+.tab-button.active {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-outline);
+    font-weight: 600;
+}
+
+.tab-button.dragging {
+    opacity: 0.5;
+}
+
+.tab-close {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+.tab-close:hover {
+    opacity: 1;
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+}
+
+.tab-content-wrapper {
+    background-color: var(--md-sys-color-surface-container);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    padding: 12px;
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+}
+
+.tab-content {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--md-sys-color-on-surface);
+    font-family: monospace;
 }
 
 .hidden {
