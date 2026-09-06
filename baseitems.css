@@ -1,1 +1,159 @@
-.hidden { display: none; }
+:root {
+    /* https://material-foundation.github.io/material-theme-builder/ */
+    --md-sys-color-primary: rgb(170 199 255);
+    --md-sys-color-surface-tint: rgb(170 199 255);
+    --md-sys-color-on-primary: rgb(10 48 95);
+    --md-sys-color-primary-container: rgb(40 71 119);
+    --md-sys-color-on-primary-container: rgb(214 227 255);
+    --md-sys-color-secondary: rgb(190 198 220);
+    --md-sys-color-on-secondary: rgb(40 49 65);
+    --md-sys-color-secondary-container: rgb(62 71 89);
+    --md-sys-color-on-secondary-container: rgb(218 226 249);
+    --md-sys-color-tertiary: rgb(221 188 224);
+    --md-sys-color-on-tertiary: rgb(63 40 68);
+    --md-sys-color-tertiary-container: rgb(87 62 92);
+    --md-sys-color-on-tertiary-container: rgb(250 216 253);
+    --md-sys-color-error: rgb(255 180 171);
+    --md-sys-color-on-error: rgb(105 0 5);
+    --md-sys-color-error-container: rgb(147 0 10);
+    --md-sys-color-on-error-container: rgb(255 218 214);
+    --md-sys-color-background: rgb(17 19 24);
+    --md-sys-color-on-background: rgb(226 226 233);
+    --md-sys-color-surface: rgb(17 19 24);
+    --md-sys-color-on-surface: rgb(226 226 233);
+    --md-sys-color-surface-variant: rgb(68 71 78);
+    --md-sys-color-on-surface-variant: rgb(196 198 208);
+    --md-sys-color-outline: rgb(142 144 153);
+    --md-sys-color-outline-variant: rgb(68 71 78);
+    --md-sys-color-shadow: rgb(0 0 0);
+    --md-sys-color-scrim: rgb(0 0 0);
+    --md-sys-color-inverse-surface: rgb(226 226 233);
+    --md-sys-color-inverse-on-surface: rgb(46 48 54);
+    --md-sys-color-inverse-primary: rgb(65 95 145);
+    --md-sys-color-primary-fixed: rgb(214 227 255);
+    --md-sys-color-on-primary-fixed: rgb(0 27 62);
+    --md-sys-color-primary-fixed-dim: rgb(170 199 255);
+    --md-sys-color-on-primary-fixed-variant: rgb(40 71 119);
+    --md-sys-color-secondary-fixed: rgb(218 226 249);
+    --md-sys-color-on-secondary-fixed: rgb(19 28 43);
+    --md-sys-color-secondary-fixed-dim: rgb(190 198 220);
+    --md-sys-color-on-secondary-fixed-variant: rgb(62 71 89);
+    --md-sys-color-tertiary-fixed: rgb(250 216 253);
+    --md-sys-color-on-tertiary-fixed: rgb(40 19 46);
+    --md-sys-color-tertiary-fixed-dim: rgb(221 188 224);
+    --md-sys-color-on-tertiary-fixed-variant: rgb(87 62 92);
+    --md-sys-color-surface-dim: rgb(17 19 24);
+    --md-sys-color-surface-bright: rgb(55 57 62);
+    --md-sys-color-surface-container-lowest: rgb(12 14 19);
+    --md-sys-color-surface-container-low: rgb(25 28 32);
+    --md-sys-color-surface-container: rgb(29 32 36);
+    --md-sys-color-surface-container-high: rgb(40 42 47);
+    --md-sys-color-surface-container-highest: rgb(51 53 58);
+}
+
+body {
+    margin-top: 100px;
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-background);
+    font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+.ribbon-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 80px;
+    background-color: var(--md-sys-color-surface-container-low);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    box-sizing: border-box;
+    z-index: 9999;
+    box-shadow: 0 2px 4px var(--md-sys-color-shadow);
+}
+
+.ribbon-head {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.ribbon-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    text-align: center;
+    color: var(--md-sys-color-primary);
+    text-shadow: 0px 6px 14px var(--md-sys-color-shadow);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.ribbon-divider {
+    width: 1px;
+    height: 36px;
+    background-color: var(--md-sys-color-outline-variant);
+    margin: 0 8px;
+    flex-shrink: 0;
+}
+
+.ribbon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 60px;
+    padding: 0 12px;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-background);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.ribbon-btn svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    fill: currentColor;
+}
+
+.ribbon-btn:hover:not(:disabled) {
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-color: var(--md-sys-color-outline);
+}
+
+.ribbon-btn:active:not(:disabled) {
+    background-color: var(--md-sys-color-surface-container);
+    box-shadow: inset 0 1px 2px var(--md-sys-color-shadow);
+}
+
+.ribbon-btn:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 1px;
+}
+
+.ribbon-btn:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-color: var(--md-sys-color-outline-variant);
+    color: var(--md-sys-color-on-surface-variant);
+    box-shadow: none;
+}
+
+.ribbon-btn:disabled svg {
+    opacity: 0.38;
+}
+
+.hidden {
+    display: none;
+}
