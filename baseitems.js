@@ -1,4 +1,4 @@
-import { parseDetails } from './modules/parser.js';
+import { texParser, ParseDetailDict } from './modules/texParser.js';
 
 const detailsFileInput = document.getElementById('details-file-input');
 const importDetailsBtn = document.getElementById('import-details-file');
@@ -16,7 +16,7 @@ detailsFileInput.addEventListener('change', (event) => {
 
     reader.onload = (e) => {
         const rawContent = e.target.result;
-        const parsedData = parseDetails(rawContent);
+        const parsedData = texParser(rawContent, ParseDetailDict);
 
         jsonPreview.textContent = JSON.stringify(parsedData, null, 2);
     };
