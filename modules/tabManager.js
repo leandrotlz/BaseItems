@@ -10,11 +10,11 @@ class TabManager {
         this.tabBar.addEventListener('dragover', (e) => this.handleDragOver(e));
     }
 
-    addTab(id, title, content, canClose = true) {
+    addTab(id, title, content, canClose = true, activate = true) {
         const existingTab = this.tabs.find(t => t.id === id);
         if (existingTab) {
             existingTab.contentElement.textContent = content;
-            this.activateTab(id);
+            if (activate) this.activateTab(id);
             return;
         }
 
@@ -51,7 +51,7 @@ class TabManager {
         this.contentWrapper.appendChild(contentEl);
 
         this.tabs.push({ id, button: tabBtn, contentElement: contentEl });
-        this.activateTab(id);
+        if (activate) this.activateTab(id);
 
         this.container.classList.remove("hidden");
     }

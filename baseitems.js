@@ -63,7 +63,7 @@ detailsFileInput.addEventListener('change', (event) => {
         tabManager.addTab('details-tab', "Details.details", rawContent);
 
         const output = JSON.stringify(details, null, 2);
-        tabManager.addTab('json-data-tab', "JSON Data", output);
+        tabManager.addTab('json-data-tab', "JSON Data", output, true, false);
 
         enableExportButton();
     };
@@ -91,8 +91,8 @@ jsonFileInput.addEventListener('change', (event) => {
         tabManager.addTab('json-data-tab', "JSON Data", output);
 
         const { rawText, dictionary } = generateFiles(details, ParseDetailDict);
-        tabManager.addTab('details-tab', "Details.details", rawText);
-        tabManager.addTab('dictionary-tab', "Base_Items.ms", dictionary);
+        tabManager.addTab('details-tab', "Details.details", rawText, true, false);
+        tabManager.addTab('dictionary-tab', "Base_Items.ms", dictionary, true, false);
 
         enableExportButton();
     };
