@@ -1,3 +1,6 @@
+import { generatedByComment } from './utils.js';
+import { generateDictionary, msAddString } from './msParser.js';
+
 export function texParser(rawText, parseInfo, pStrings) {
     let cursor = 0;
     const tokens = [];
@@ -88,6 +91,72 @@ export function texParser(rawText, parseInfo, pStrings) {
     const output = parseStruct(parseInfo, pStrings);
     const rootKeys = Object.keys(output);
     return rootKeys.length === 1 && Array.isArray(output[rootKeys[0]]) ? output[rootKeys[0]] : output;
+}
+
+function structTokens(info) {
+    const tokens = { start: "", end: "" };
+    for (const [key, rule] of Object.entries(info)) {
+        if (rule.type === 'START') tokens.start = key;
+        if (rule.type === 'END') tokens.end = key;
+    }
+    return tokens;
+}
+
+function generateStruct(info, data, lines, pstrings, indent) {
+    const pad = " ".repeat(indent);
+
+    for (const [key, rule] of Object.entries(info)) {
+        if (rule.type === 'START' || rule.type === 'END') continue;
+        if (!(key in data)) continue;
+        const value = data[key];
+
+        if (rule.type === 'STRUCT') {
+            const { start, end } = structTokens(rule.parseInfo);
+            const entries = rule.array ? value : [value];
+            for (const entry of entries) {
+                if (rule.named) {
+                    lines.push(pad + key + " " + entry.Name);
+                    lines.push(pad + start);
+                } else {
+                    lines.push(pad + key + " " + start);
+                }
+                generateStruct(rule.parseInfo, entry, lines, pstrings, indent + 1);
+                lines.push(pad + end);
+            }
+        } else if (rule.type === 'PSTRING') {
+            lines.push(pad + key + ' "' + msAddString(pstrings, value) + '"');
+        } else if (rule.type === 'BOOL') {
+            if (value === true) lines.push(pad + key);
+        } else if (rule.array) {
+            for (const item of value) lines.push(pad + key + " " + item);
+        } else if (rule.type === 'ARRAY') {
+            lines.push(pad + key + (value.length > 0 ? " " + value.join(" ") : ""));
+        } else {
+            lines.push(pad + key + " " + value);
+        }
+    }
+}
+
+function generateRoot(jsonData, parseInfo, pstrings) {
+    let rootKey = null;
+    for (const key of Object.keys(parseInfo)) {
+        if (parseInfo[key].type === 'STRUCT') {
+            rootKey = key;
+            break;
+        }
+    }
+
+    const rootData = Array.isArray(jsonData) ? { [rootKey]: jsonData } : jsonData;
+    const lines = generatedByComment();
+    generateStruct(parseInfo, rootData, lines, pstrings, 0);
+    return lines.join("\r\n") + "\r\n";
+}
+
+export function generateFiles(jsonData, parseInfo) {
+    const pstrings = {};
+    const rawText = generateRoot(jsonData, parseInfo, pstrings);
+    const dictionary = generateDictionary(pstrings);
+    return { rawText, dictionary };
 }
 
 const ParseVolume = {

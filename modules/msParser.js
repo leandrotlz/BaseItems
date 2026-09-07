@@ -1,3 +1,5 @@
+import { generatedByComment } from './utils.js';
+
 export function msParser(rawText) {
     let pstrings = {};
     for (const line of rawText.split(/\r?\n|\r/)) {
@@ -12,6 +14,15 @@ export function msParser(rawText) {
     }
     return pstrings;
 };
+
+export function generateDictionary(pstrings) {
+    const lines = generatedByComment();
+    const entries = Object.entries(pstrings).sort((a, b) => a[1].localeCompare(b[1], undefined, { sensitivity: 'base' }));
+    for (const [key, value] of entries) {
+        lines.push('"' + key + '" "' + value + '"');
+    }
+    return lines.join("\r\n") + "\r\n";
+}
 
 export function msAddString(pstrings, rawText) {
     function crc32(str) {
@@ -31,4 +42,5 @@ export function msAddString(pstrings, rawText) {
 
     const key = "P" + crc32(rawText);
     pstrings[key] = rawText;
+    return key;
 };
