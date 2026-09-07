@@ -13,7 +13,7 @@ class TabManager {
     addTab(id, title, content, canClose = true, activate = true) {
         const existingTab = this.tabs.find(t => t.id === id);
         if (existingTab) {
-            existingTab.contentElement.textContent = content;
+            existingTab.contentElement.replaceChildren(content);
             if (activate) this.activateTab(id);
             return;
         }
@@ -43,14 +43,14 @@ class TabManager {
         tabBtn.addEventListener('dragstart', (e) => this.handleDragStart(e, tabBtn));
         tabBtn.addEventListener('dragend', () => this.handleDragEnd(tabBtn));
 
-        const contentEl = document.createElement('pre');
-        contentEl.className = 'tab-content hidden';
-        contentEl.textContent = content;
+        const elem = document.createElement('div');
+        elem.className = 'tab-content hidden';
+        elem.appendChild(content);
 
         this.tabBar.appendChild(tabBtn);
-        this.contentWrapper.appendChild(contentEl);
+        this.contentWrapper.appendChild(elem);
 
-        this.tabs.push({ id, button: tabBtn, contentElement: contentEl });
+        this.tabs.push({ id, button: tabBtn, contentElement: elem });
         if (activate) this.activateTab(id);
 
         this.container.classList.remove("hidden");

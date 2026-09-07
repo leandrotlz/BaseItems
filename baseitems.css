@@ -231,7 +231,7 @@ body {
     overflow-y: auto;
 }
 
-.tab-content {
+.tab-text {
     margin: 0;
     white-space: pre-wrap;
     word-break: break-word;

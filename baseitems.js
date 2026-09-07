@@ -13,6 +13,13 @@ const exportJsonBtn = document.getElementById('export-json-file');
 let pstrings = {};
 let details = {};
 
+function textTabContent(text) {
+    const div = document.createElement('div');
+    div.className = 'tab-text';
+    div.textContent = text;
+    return div;
+}
+
 function enableExportButton() {
     const hasData = Array.isArray(details) ? details.length > 0 : Object.keys(details).length > 0;
     if (hasData) {
@@ -42,7 +49,7 @@ dictionaryFileInput.addEventListener('change', (event) => {
 
     reader.onload = (e) => {
         const rawContent = e.target.result;
-        tabManager.addTab('dictionary-tab', "Base_Items.ms", rawContent);
+        tabManager.addTab('dictionary-tab', "Base_Items.ms", textTabContent(rawContent));
 
         pstrings = msParser(rawContent);
         importDetailsBtn.removeAttribute("disabled");
@@ -60,10 +67,10 @@ detailsFileInput.addEventListener('change', (event) => {
     reader.onload = (e) => {
         const rawContent = e.target.result;
         details = texParser(rawContent, ParseDetailDict, pstrings);
-        tabManager.addTab('details-tab', "Details.details", rawContent);
+        tabManager.addTab('details-tab', "Details.details", textTabContent(rawContent));
 
         const output = JSON.stringify(details, null, 2);
-        tabManager.addTab('json-data-tab', "JSON Data", output, true, false);
+        tabManager.addTab('json-data-tab', "JSON Data", textTabContent(output), true, false);
 
         enableExportButton();
     };
@@ -88,11 +95,11 @@ jsonFileInput.addEventListener('change', (event) => {
         details = jsonData;
 
         const output = JSON.stringify(details, null, 2);
-        tabManager.addTab('json-data-tab', "JSON Data", output);
+        tabManager.addTab('json-data-tab', "JSON Data", textTabContent(output));
 
         const { rawText, dictionary } = generateFiles(details, ParseDetailDict);
-        tabManager.addTab('details-tab', "Details.details", rawText, true, false);
-        tabManager.addTab('dictionary-tab', "Base_Items.ms", dictionary, true, false);
+        tabManager.addTab('details-tab', "Details.details", textTabContent(rawText), true, false);
+        tabManager.addTab('dictionary-tab', "Base_Items.ms", textTabContent(dictionary), true, false);
 
         enableExportButton();
     };
