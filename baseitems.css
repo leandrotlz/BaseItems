@@ -239,6 +239,27 @@ body {
     font-family: monospace;
 }
 
+.tab-comparison {
+    color: var(--md-sys-color-on-surface);
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 900px;
+}
+
+.tab-comparison p {
+    margin: 0 0 4px 0;
+}
+
+.tab-comparison ul {
+    margin: 0 0 12px 0;
+    padding-left: 24px;
+}
+
+.tab-comparison li {
+    margin: 2px 0;
+    word-break: break-word;
+}
+
 .hidden {
     display: none;
 }
