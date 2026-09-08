@@ -260,6 +260,115 @@ body {
     word-break: break-word;
 }
 
+.bi-viewer {
+    display: flex;
+    gap: 12px;
+}
+
+.bi-list-panel,
+.bi-edit-panel {
+    overflow-y: auto;
+    max-height: calc(100vh - 176px);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+    background-color: var(--md-sys-color-surface-container-low);
+}
+
+.bi-list-panel {
+    flex: 0 1 50%;
+    min-width: 0;
+}
+
+.bi-edit-panel {
+    flex: 0 1 50%;
+    min-width: 0;
+}
+
+.bi-tree {
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    font-size: 13px;
+    user-select: none;
+}
+
+.bi-items {
+    margin: 0;
+    padding: 0 0 4px 18px;
+    list-style: none;
+}
+
+.bi-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.bi-row:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.bi-group summary {
+    list-style: none;
+}
+
+.bi-group summary::-webkit-details-marker {
+    display: none;
+}
+
+.bi-group summary::before {
+    content: "▸";
+    display: inline-block;
+    width: 1em;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: transform 0.15s ease;
+}
+
+.bi-group details[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.bi-group-row {
+    font-weight: 600;
+    color: var(--md-sys-color-primary);
+}
+
+.bi-row.bi-selected,
+.bi-row.bi-selected:hover {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+}
+
+.bi-row.bi-dragging {
+    opacity: 0.5;
+}
+
+.bi-row.bi-drop-above {
+    box-shadow: inset 0 2px 0 var(--md-sys-color-primary);
+}
+
+.bi-row.bi-drop-below {
+    box-shadow: inset 0 -2px 0 var(--md-sys-color-primary);
+}
+
+.bi-row.bi-drop-target {
+    box-shadow: inset 0 0 0 1px var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.bi-edit {
+    margin: 0;
+    padding: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--md-sys-color-on-surface);
+    font-family: monospace;
+    font-size: 12px;
+}
+
 .hidden {
     display: none;
 }

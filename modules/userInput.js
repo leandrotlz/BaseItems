@@ -2,6 +2,7 @@ import { texParser, generateFiles, ParseDetailDict } from './texParser.js';
 import { msParser } from './msParser.js';
 import { compareDetails } from './jsonCompare.js';
 import { addTextTab, addComparisonTab } from './uiTabs.js';
+import { addBaseItemsTab } from './uiBaseItems.js';
 
 const dictionaryFileInput = document.getElementById('dictionary-file-input');
 const detailsFileInput = document.getElementById('details-file-input');
@@ -69,11 +70,12 @@ function loadDictionary(rawContent) {
 
 function loadDetails(rawContent) {
     details = texParser(rawContent, ParseDetailDict, pstrings);
-    addTextTab('details-tab', "Details.details", rawContent);
+    addTextTab('details-tab', "Details.details", rawContent, true, false);
 
     const output = JSON.stringify(details, null, 2);
     addTextTab('json-data-tab', "JSON Data", output, true, false);
 
+    addBaseItemsTab(details, true);
     enableButtons();
 }
 
@@ -81,12 +83,13 @@ function loadJson(jsonData) {
     details = jsonData;
 
     const output = JSON.stringify(details, null, 2);
-    addTextTab('json-data-tab', "JSON Data", output);
+    addTextTab('json-data-tab', "JSON Data", output, true, false);
 
     const { rawText, dictionary } = generateFiles(details, ParseDetailDict);
     addTextTab('details-tab', "Details.details", rawText, true, false);
     addTextTab('dictionary-tab', "Base_Items.ms", dictionary, true, false);
 
+    addBaseItemsTab(details, true);
     enableButtons();
 }
 

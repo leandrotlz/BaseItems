@@ -108,7 +108,7 @@ class TabManager {
         e.dataTransfer.dropEffect = 'move';
         
         const targetTab = e.target.closest('.tab-button');
-        if (targetTab && targetTab !== this.draggedTab) {
+        if (targetTab && this.draggedTab && targetTab !== this.draggedTab) {
             const rect = targetTab.getBoundingClientRect();
             const midpoint = rect.left + rect.width / 2;
             if (e.clientX < midpoint) {
