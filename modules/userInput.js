@@ -82,7 +82,7 @@ function loadDetails(rawContent) {
 function loadJson(jsonData) {
     const newDetails = extractDetails(jsonData);
     if (!newDetails) {
-        alert("JSON file does not contain a \"Details\" array.");
+        alert("JSON file is invalid.");
         return;
     }
     details = newDetails;
@@ -100,7 +100,7 @@ function loadJson(jsonData) {
 function showComparison(jsonData) {
     const newDetails = extractDetails(jsonData);
     if (!Array.isArray(details) || !newDetails) {
-        alert("JSON file does not contain a \"Details\" array.");
+        alert("JSON file is invalid.");
         return;
     }
 
