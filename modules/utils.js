@@ -9,3 +9,11 @@ export function detailLabel(item) {
     if (item.DisplayName) parts.push(item.DisplayName);
     return (parts.length > 0 ? parts.join(' > ') + ' ' : '') + `(${item.Name})`;
 }
+
+export function detailsToJson(details) {
+    return JSON.stringify({ Details: details }, null, 2);
+}
+
+export function extractDetails(jsonData) {
+    return jsonData !== null && typeof jsonData === 'object' && Array.isArray(jsonData.Details) ? jsonData.Details : null;
+}

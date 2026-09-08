@@ -3,6 +3,7 @@ import { msParser } from './msParser.js';
 import { compareDetails } from './jsonCompare.js';
 import { addTextTab, addComparisonTab } from './uiTabs.js';
 import { addBaseItemsTab } from './uiBaseItems.js';
+import { detailsToJson, extractDetails } from './utils.js';
 
 const dictionaryFileInput = document.getElementById('dictionary-file-input');
 const detailsFileInput = document.getElementById('details-file-input');
@@ -48,7 +49,7 @@ function readJsonFile(file, onParsed) {
 }
 
 function exportJson() {
-    const jsonString = JSON.stringify(details, null, 2);
+    const jsonString = detailsToJson(details);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -72,18 +73,21 @@ function loadDetails(rawContent) {
     details = texParser(rawContent, ParseDetailDict, pstrings);
     addTextTab('details-tab', "Details.details", rawContent, true, false);
 
-    const output = JSON.stringify(details, null, 2);
-    addTextTab('json-data-tab', "JSON Data", output, true, false);
+    addTextTab('json-data-tab', "JSON Data", detailsToJson(details), true, false);
 
     addBaseItemsTab(details, true);
     enableButtons();
 }
 
 function loadJson(jsonData) {
-    details = jsonData;
+    const newDetails = extractDetails(jsonData);
+    if (!newDetails) {
+        alert("JSON file does not contain a \"Details\" array.");
+        return;
+    }
+    details = newDetails;
 
-    const output = JSON.stringify(details, null, 2);
-    addTextTab('json-data-tab', "JSON Data", output, true, false);
+    addTextTab('json-data-tab', "JSON Data", detailsToJson(details), true, false);
 
     const { rawText, dictionary } = generateFiles(details, ParseDetailDict);
     addTextTab('details-tab', "Details.details", rawText, true, false);
@@ -93,9 +97,10 @@ function loadJson(jsonData) {
     enableButtons();
 }
 
-function showComparison(newDetails) {
-    if (!Array.isArray(newDetails) || !Array.isArray(details)) {
-        alert("JSON file does not contain a details array.");
+function showComparison(jsonData) {
+    const newDetails = extractDetails(jsonData);
+    if (!Array.isArray(details) || !newDetails) {
+        alert("JSON file does not contain a \"Details\" array.");
         return;
     }
 
