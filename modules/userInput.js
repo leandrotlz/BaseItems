@@ -9,18 +9,28 @@ const dictionaryFileInput = document.getElementById('dictionary-file-input');
 const detailsFileInput = document.getElementById('details-file-input');
 const jsonFileInput = document.getElementById('json-file-input');
 const compareJsonFileInput = document.getElementById('compare-json-file-input');
-const importDictionaryBtn = document.getElementById('import-dictionary-file');
-const importDetailsBtn = document.getElementById('import-details-file');
-const importJsonBtn = document.getElementById('import-json-file');
-const exportJsonBtn = document.getElementById('export-json-file');
-const compareJsonBtn = document.getElementById('compare-json-file');
+
+const openJsonBtn = document.getElementById('open-json-btn');
+const saveJsonBtn = document.getElementById('save-json-btn');
+const importDataBtn = document.getElementById('import-data-btn');
+// TODO: export-data-btn
+const compareJsonBtn = document.getElementById('compare-json-btn');
+
+const importDialog = document.getElementById('import-dialog');
+const importDialogCancel = document.getElementById('import-dialog-cancel');
+const chooseDictionaryBtn = document.getElementById('choose-dictionary-file');
+const chooseDetailsBtn = document.getElementById('choose-details-file');
+const dictionaryFileName = document.getElementById('dictionary-file-name');
+const detailsFileName = document.getElementById('details-file-name');
 
 let pstrings = {};
 let details = {};
+let dictionaryFile = null;
+let detailsFile = null;
 
 function enableButtons() {
     const hasData = Array.isArray(details) ? details.length > 0 : Object.keys(details).length > 0;
-    for (const btn of [exportJsonBtn, compareJsonBtn]) {
+    for (const btn of [saveJsonBtn, compareJsonBtn]) {
         if (hasData) {
             btn.removeAttribute("disabled");
         } else {
@@ -66,7 +76,6 @@ function loadDictionary(rawContent) {
     addTextTab('dictionary-tab', "Base_Items.ms", rawContent);
 
     pstrings = msParser(rawContent);
-    importDetailsBtn.removeAttribute("disabled");
 }
 
 function loadDetails(rawContent) {
@@ -108,34 +117,59 @@ function showComparison(jsonData) {
     addComparisonTab('json-comparison-tab', "JSON Comparison", result);
 }
 
+function openImportDialog() {
+    dictionaryFile = null;
+    detailsFile = null;
+    dictionaryFileInput.value = '';
+    detailsFileInput.value = '';
+    dictionaryFileName.textContent = '';
+    detailsFileName.textContent = '';
+    importDialog.showModal();
+}
+
+function importDataFiles() {
+    if (!dictionaryFile || !detailsFile) return;
+    importDialog.close();
+    readFileAsText(dictionaryFile, (dictionaryText) => {
+        readFileAsText(detailsFile, (detailsText) => {
+            loadDictionary(dictionaryText);
+            loadDetails(detailsText);
+        });
+    });
+}
+
 export function addListeners() {
-    importDictionaryBtn.addEventListener('click', () => {
-        dictionaryFileInput.click();
-    });
-
-    importDetailsBtn.addEventListener('click', () => {
-        detailsFileInput.click();
-    });
-
-    importJsonBtn.addEventListener('click', () => {
+    openJsonBtn.addEventListener('click', () => {
         jsonFileInput.click();
     });
 
-    compareJsonBtn.addEventListener('click', () => {
-        compareJsonFileInput.click();
+    importDataBtn.addEventListener('click', openImportDialog);
+
+    chooseDictionaryBtn.addEventListener('click', () => dictionaryFileInput.click());
+
+    dictionaryFileInput.addEventListener('change', () => {
+        const file = dictionaryFileInput.files[0];
+        if (!file) return;
+        dictionaryFile = file;
+        dictionaryFileName.textContent = file.name;
+        importDataFiles();
+        dictionaryFileInput.value = '';
     });
 
-    dictionaryFileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
+    chooseDetailsBtn.addEventListener('click', () => detailsFileInput.click());
+
+    detailsFileInput.addEventListener('change', () => {
+        const file = detailsFileInput.files[0];
         if (!file) return;
-        readFileAsText(file, loadDictionary);
+        detailsFile = file;
+        detailsFileName.textContent = file.name;
+        importDataFiles();
+        detailsFileInput.value = '';
     });
 
-    detailsFileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        readFileAsText(file, loadDetails);
-    });
+    importDialogCancel.addEventListener('click', () => importDialog.close());
+
+    saveJsonBtn.addEventListener('click', exportJson);
 
     jsonFileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
@@ -143,7 +177,9 @@ export function addListeners() {
         readJsonFile(file, loadJson);
     });
 
-    exportJsonBtn.addEventListener('click', exportJson);
+    compareJsonBtn.addEventListener('click', () => {
+        compareJsonFileInput.click();
+    });
 
     compareJsonFileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
