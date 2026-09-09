@@ -13,7 +13,7 @@ const compareJsonFileInput = document.getElementById('compare-json-file-input');
 const openJsonBtn = document.getElementById('open-json-btn');
 const saveJsonBtn = document.getElementById('save-json-btn');
 const importDataBtn = document.getElementById('import-data-btn');
-// TODO: export-data-btn
+const exportDataBtn = document.getElementById('export-data-btn');
 const compareJsonBtn = document.getElementById('compare-json-btn');
 
 const importDialog = document.getElementById('import-dialog');
@@ -30,7 +30,7 @@ let detailsFile = null;
 
 function enableButtons() {
     const hasData = Array.isArray(details) ? details.length > 0 : Object.keys(details).length > 0;
-    for (const btn of [saveJsonBtn, compareJsonBtn]) {
+    for (const btn of [saveJsonBtn, exportDataBtn, compareJsonBtn]) {
         if (hasData) {
             btn.removeAttribute("disabled");
         } else {
@@ -58,18 +58,29 @@ function readJsonFile(file, onParsed) {
     });
 }
 
-function exportJson() {
-    const jsonString = detailsToJson(details);
-    const blob = new Blob([jsonString], { type: 'application/json' });
+function downloadFile(fileName, content, type) {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'Details.json';
+    link.download = fileName;
     document.body.appendChild(link);
     // It's 2026 and we're still faking clicks to trigger a download...
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+}
+
+function exportJson() {
+    downloadFile('Details.json', detailsToJson(details), 'application/json');
+}
+
+function exportData() {
+    const { rawText, dictionary } = generateFiles(details, ParseDetailDict);
+    addTextTab('details-tab', "Details.details", rawText, true, false);
+    addTextTab('dictionary-tab', "Base_Items.ms", dictionary, true, false);
+    downloadFile('Details.details', rawText, 'text/plain');
+    downloadFile('Base_Items.ms', dictionary, 'text/plain');
 }
 
 function loadDictionary(rawContent) {
@@ -170,6 +181,8 @@ export function addListeners() {
     importDialogCancel.addEventListener('click', () => importDialog.close());
 
     saveJsonBtn.addEventListener('click', exportJson);
+
+    exportDataBtn.addEventListener('click', exportData);
 
     jsonFileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
