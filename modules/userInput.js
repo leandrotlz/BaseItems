@@ -109,10 +109,6 @@ function loadJson(jsonData) {
 
     addTextTab('json-data-tab', "JSON Data", detailsToJson(details), true, false);
 
-    const { rawText, dictionary } = generateFiles(details, ParseDetailDict);
-    addTextTab('details-tab', "Details.details", rawText, true, false);
-    addTextTab('dictionary-tab', "Base_Items.ms", dictionary, true, false);
-
     addBaseItemsTab(details, true);
     enableButtons();
 }
