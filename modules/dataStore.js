@@ -8,6 +8,7 @@ const state = {
     Generator: generatorString(),
     Details: [],
     Tags: {},
+    Data: {},
 };
 
 export function getState() {
@@ -30,6 +31,12 @@ export function getTags(jsonData) {
     return tags;
 }
 
+export function getDetailData(jsonData) {
+    const detailData = jsonData?.Data;
+    if (detailData === null || typeof detailData !== 'object' || Array.isArray(detailData)) return {};
+    return detailData;
+}
+
 // A JSON load replaces the state entirely.
 export function loadJson(jsonData) {
     const details = getDetails(jsonData);
@@ -38,6 +45,7 @@ export function loadJson(jsonData) {
     state.Generator = jsonData.Generator;
     state.Details = details;
     state.Tags = getTags(jsonData);
+    state.Data = getDetailData(jsonData);
     return true;
 }
 
@@ -66,19 +74,32 @@ function mergeTags(tags, details) {
     return tags;
 }
 
+// Data holds detail metadata that is not part of the Details file data.
+function getDataFromImport(details) {
+    const itemData = {};
+    for (const item of details) {
+        if (typeof item?.Name !== 'string') continue;
+        const tags = extractTags(item?.DisplayHelp);
+        if (tags.length > 0) itemData[item.Name.toLowerCase()] = { tags };
+    }
+    return itemData;
+}
+
 // A Data Import replaces the details, but keeps the rest of the state.
 // New tags are added to the state, existing tags are left alone.
+// Data is rebuilt from the imported details, mirroring the file.
 // Returns the warnings produced by the parser, if any.
 export function importData(detailsText, dictionaryText) {
     const pstrings = msParser(dictionaryText);
     const warnings = [];
     state.Details = texParser(detailsText, ParseDetailDict, pstrings, warnings);
     mergeTags(state.Tags, state.Details);
+    state.Data = getDataFromImport(state.Details);
     return warnings;
 }
 
 export function saveJson() {
-    return JSON.stringify({ Schema: "BaseItems", Generator: generatorString(), Details: state.Details, Tags: state.Tags }, null, 2);
+    return JSON.stringify({ Schema: "BaseItems", Generator: generatorString(), Details: state.Details, Tags: state.Tags, Data: state.Data }, null, 2);
 }
 
 export function exportFiles() {
