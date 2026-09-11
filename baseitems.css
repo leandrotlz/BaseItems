@@ -277,6 +277,14 @@ body {
 .bi-list-panel {
     flex: 0 1 50%;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.bi-tree-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .bi-edit-panel {
@@ -290,6 +298,63 @@ body {
     list-style: none;
     font-size: 13px;
     user-select: none;
+}
+
+.bi-search-bar {
+    display: flex;
+    gap: 6px;
+    padding: 8px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    flex: 0 0 auto;
+}
+
+.bi-search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 28px;
+    padding: 0 8px;
+    background-color: var(--md-sys-color-surface-container-lowest);
+    color: var(--md-sys-color-on-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.bi-search-input::placeholder {
+    color: var(--md-sys-color-outline);
+}
+
+.bi-search-input:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary);
+}
+
+.bi-search-clear {
+    flex: 0 0 auto;
+    height: 28px;
+    padding: 0 12px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bi-search-clear:hover {
+    border-color: var(--md-sys-color-outline);
+}
+
+.bi-search-clear:active {
+    box-shadow: inset 0 1px 2px var(--md-sys-color-shadow);
+}
+
+.bi-search-clear:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 1px;
 }
 
 .bi-items {

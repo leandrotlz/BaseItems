@@ -24,3 +24,20 @@ export function extractDetails(jsonData) {
 
     return Array.isArray(jsonData.Details) ? jsonData.Details : null;
 }
+
+export function searchTokens(text) {
+    const tokens = [];
+    if (typeof text !== 'string') return tokens;
+    for (const part of text.split(',')) {
+        const token = part.trim();
+        if (token) tokens.push(token);
+        if (tokens.length >= 32) break;
+    }
+    return tokens;
+}
+
+export function searchItems(displayHelp, tokens) {
+    if (!Array.isArray(tokens) || tokens.length === 0) return true;
+    const haystack = (displayHelp ?? "").toLowerCase();
+    return tokens.every(token => haystack.includes(token.toLowerCase()));
+}

@@ -1,9 +1,12 @@
 import { tabManager } from './tabManager.js';
+import { searchTokens, searchItems } from './utils.js';
 
 let treeRoot = null;
 let selectedRows = new Set();
 let anchorRow = null;
 let draggedRow = null;
+
+let searchInput = null;
 
 let jsonOutput = null;
 let currentDetails = null;
@@ -21,8 +24,15 @@ export function addBaseItemsTab(details, activate) {
 
     const listPanel = document.createElement('div');
     listPanel.className = 'bi-list-panel';
+    listPanel.appendChild(buildSearchBar());
+
+    const treeScroll = document.createElement('div');
+    treeScroll.className = 'bi-tree-scroll';
     treeRoot = buildTree(details);
-    listPanel.appendChild(treeRoot);
+    treeScroll.appendChild(treeRoot);
+    listPanel.appendChild(treeScroll);
+
+    applySearch();
 
     const editPanel = document.createElement('div');
     editPanel.className = 'bi-edit-panel';
@@ -39,6 +49,56 @@ export function addBaseItemsTab(details, activate) {
     treeRoot.addEventListener('drop', handleDrop);
 
     tabManager.addTab('base-items-tab', "Base Items", content, false, activate);
+}
+
+function buildSearchBar() {
+    const bar = document.createElement('div');
+    bar.className = 'bi-search-bar';
+
+    searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.className = 'bi-search-input';
+    searchInput.placeholder = 'Search...';
+    searchInput.autocomplete = 'off';
+    searchInput.spellcheck = false;
+    searchInput.addEventListener('input', applySearch);
+
+    const clearSearchBtn = document.createElement('button');
+    clearSearchBtn.type = 'button';
+    clearSearchBtn.className = 'bi-search-clear';
+    clearSearchBtn.textContent = 'Clear';
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        applySearch();
+        searchInput.focus();
+    });
+
+    bar.appendChild(searchInput);
+    bar.appendChild(clearSearchBtn);
+    return bar;
+}
+
+function applySearch() {
+    const tokens = searchTokens(searchInput.value);
+    const rows = itemRows();
+    const visible = new Set();
+
+    for (const row of rows) {
+        const match = searchItems(row._item.DisplayHelp, tokens);
+        row.closest('li').classList.toggle('hidden', !match);
+        if (match) visible.add(row);
+    }
+
+    for (const group of treeRoot.querySelectorAll('li.bi-group')) {
+        const anyVisible = group.querySelector('.bi-items li:not(.hidden)') !== null;
+        group.classList.toggle('hidden', !anyVisible);
+        if (anyVisible && tokens.length > 0) {
+            group.querySelector('details').open = true;
+        }
+    }
+
+    const filterSelection = rows.filter(row => selectedRows.has(row) && visible.has(row));
+    if (filterSelection.length !== selectedRows.size) setSelected(filterSelection);
 }
 
 function buildTree(details) {
@@ -104,7 +164,9 @@ function handleClick(e) {
         const from = rows.indexOf(anchorRow);
         const to = rows.indexOf(row);
         if (from !== -1 && to !== -1) {
-            setSelected(rows.slice(Math.min(from, to), Math.max(from, to) + 1));
+            const range = rows.slice(Math.min(from, to), Math.max(from, to) + 1);
+            // Hidden items are being filtered out by a search, ignore them.
+            setSelected(range.filter(row => !row.closest('li').classList.contains('hidden')));
         }
         return;
     }
@@ -138,6 +200,12 @@ function refreshEditPanel() {
 }
 
 function handleDragStart(e, row) {
+    // Drag and drop reordering is only possible when all items are visible;
+    // don't allow it if a search is active.
+    if (searchInput.value) {
+        e.preventDefault();
+        return;
+    }
     draggedRow = row;
     row.classList.add('bi-dragging');
     e.dataTransfer.effectAllowed = 'move';
