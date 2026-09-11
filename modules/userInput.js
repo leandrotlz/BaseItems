@@ -3,7 +3,7 @@ import { msParser } from './msParser.js';
 import { compareDetails } from './jsonCompare.js';
 import { addTextTab, addComparisonTab } from './uiTabs.js';
 import { addBaseItemsTab } from './uiBaseItems.js';
-import { detailsToJson, extractDetails } from './utils.js';
+import { detailsToJson, getDetails, getTags, mergeTags } from './utils.js';
 
 const dictionaryFileInput = document.getElementById('dictionary-file-input');
 const detailsFileInput = document.getElementById('details-file-input');
@@ -25,6 +25,7 @@ const detailsFileName = document.getElementById('details-file-name');
 
 let pstrings = {};
 let details = {};
+let tags = {};
 let dictionaryFile = null;
 let detailsFile = null;
 
@@ -72,7 +73,7 @@ function downloadFile(fileName, content, type) {
 }
 
 function exportJson() {
-    downloadFile('Details.json', detailsToJson(details), 'application/json');
+    downloadFile('Details.json', detailsToJson(details, tags), 'application/json');
 }
 
 function exportData() {
@@ -91,30 +92,36 @@ function loadDictionary(rawContent) {
 
 function loadDetails(rawContent) {
     details = texParser(rawContent, ParseDetailDict, pstrings);
+    // New tags found in DisplayHelp are added as placeholders; existing
+    // entries (potentially edited in a previously loaded JSON) are kept.
+    mergeTags(tags, details);
+
     addTextTab('details-tab', "Details.details", rawContent, true, false);
 
-    addTextTab('json-data-tab', "JSON Data", detailsToJson(details), true, false);
+    addTextTab('json-data-tab', "JSON Data", detailsToJson(details, tags), true, false);
 
     addBaseItemsTab(details, true);
     enableButtons();
 }
 
 function loadJson(jsonData) {
-    const newDetails = extractDetails(jsonData);
+    const newDetails = getDetails(jsonData);
     if (!newDetails) {
         alert("JSON file is invalid.");
         return;
     }
+    // A JSON load replaces the tags entirely.
     details = newDetails;
+    tags = getTags(jsonData);
 
-    addTextTab('json-data-tab', "JSON Data", detailsToJson(details), true, false);
+    addTextTab('json-data-tab', "JSON Data", detailsToJson(details, tags), true, false);
 
     addBaseItemsTab(details, true);
     enableButtons();
 }
 
 function showComparison(jsonData) {
-    const newDetails = extractDetails(jsonData);
+    const newDetails = getDetails(jsonData);
     if (!Array.isArray(details) || !newDetails) {
         alert("JSON file is invalid.");
         return;
