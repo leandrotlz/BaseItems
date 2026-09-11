@@ -116,12 +116,14 @@ function openImportDialog() {
 function importDataFiles() {
     if (!dictionaryFile || !detailsFile) return;
     importDialog.close();
+    const dictionaryName = dictionaryFile.name;
+    const detailsName = detailsFile.name;
     readFileAsText(dictionaryFile, (dictionaryText) => {
         readFileAsText(detailsFile, (detailsText) => {
             const warnings = importData(detailsText, dictionaryText);
             // Show raw data for debug purposes, likely deprecated in the future.
-            addTextTab('dictionary-tab', "Base_Items.ms", dictionaryText);
-            addTextTab('details-tab', "Details.details", detailsText, true, false);
+            addTextTab('dictionary-tab', dictionaryName, dictionaryText);
+            addTextTab('details-tab', detailsName, detailsText, true, false);
             showTabs();
             // Warning tabs added last so it takes focus.
             addWarningsTab(warnings);

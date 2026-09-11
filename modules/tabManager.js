@@ -13,6 +13,7 @@ class TabManager {
     addTab(id, title, content, canClose = true, activate = true) {
         const existingTab = this.tabs.find(t => t.id === id);
         if (existingTab) {
+            existingTab.button.querySelector('.tab-title').textContent = title;
             existingTab.contentElement.replaceChildren(content);
             if (activate) this.activateTab(id);
             return;
