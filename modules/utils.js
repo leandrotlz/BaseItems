@@ -30,3 +30,11 @@ export function searchItems(displayHelp, tokens) {
     const haystack = (displayHelp ?? "").toLowerCase();
     return tokens.every(token => haystack.includes(token.toLowerCase()));
 }
+
+export function countRepeats(items) {
+    const counts = new Map();
+    for (const item of items) {
+        counts.set(item, (counts.get(item) ?? 0) + 1);
+    }
+    return counts;
+}

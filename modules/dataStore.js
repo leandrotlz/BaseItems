@@ -68,10 +68,13 @@ function mergeTags(tags, details) {
 
 // A Data Import replaces the details, but keeps the rest of the state.
 // New tags are added to the state, existing tags are left alone.
+// Returns the warnings produced by the parser, if any.
 export function importData(detailsText, dictionaryText) {
     const pstrings = msParser(dictionaryText);
-    state.Details = texParser(detailsText, ParseDetailDict, pstrings);
+    const warnings = [];
+    state.Details = texParser(detailsText, ParseDetailDict, pstrings, warnings);
     mergeTags(state.Tags, state.Details);
+    return warnings;
 }
 
 export function saveJson() {

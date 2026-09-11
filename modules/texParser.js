@@ -1,7 +1,7 @@
 import { generatedByComment } from './utils.js';
 import { generateDictionary, msAddString } from './msParser.js';
 
-export function texParser(rawText, parseInfo, pStrings) {
+export function texParser(rawText, parseInfo, pStrings, warnings) {
     let cursor = 0;
     const tokens = [];
     for (const line of rawText.split(/\r?\n|\r/)) {
@@ -42,7 +42,7 @@ export function texParser(rawText, parseInfo, pStrings) {
 
             const match = rules[token.toLowerCase()];
             if (!match) {
-                console.log("Unknown token: " + token);
+                warnings.push("Unknown Token " + token);
                 consumeToken();
                 continue;
             }
@@ -64,10 +64,12 @@ export function texParser(rawText, parseInfo, pStrings) {
                 }
             } else if (rule.type === 'PSTRING') {
                 value = consumeLine().replace(/^"|"$/g, '');
-                if (pStrings[value]) {
+                if (value === "") {
+                    warnings.push("Missing " + preserveCase + " PString");
+                } else if (pStrings[value]) {
                     value = pStrings[value];
                 } else {
-                    console.log("Unknown pstring: " + value);
+                    warnings.push("Unknown PString " + value);
                 }
             } else if (rule.type === 'STRING') {
                 value = consumeLine();

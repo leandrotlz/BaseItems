@@ -1,5 +1,5 @@
 import { tabManager } from './tabManager.js';
-import { detailLabel } from './utils.js';
+import { countRepeats, detailLabel } from './utils.js';
 
 function textTabContent(text) {
     const div = document.createElement('div');
@@ -59,4 +59,32 @@ export function addTextTab(tabId, title, content, canClose = true, activate = tr
 
 export function addComparisonTab(tabId, title, content, canClose = true, activate = true) {
     tabManager.addTab(tabId, title, comparisonTabContent(content), canClose, activate);
+}
+
+function warningsTabContent(warnings) {
+    const div = document.createElement('div');
+    div.className = 'tab-warnings';
+
+    const summary = document.createElement('p');
+    summary.className = 'warning-summary';
+    summary.textContent = `Import warnings: ${warnings.length}`;
+    div.appendChild(summary);
+
+    const ul = document.createElement('ul');
+    ul.className = 'warning-list';
+    for (const [warning, count] of countRepeats(warnings)) {
+        const li = document.createElement('li');
+        li.textContent = count > 1 ? `${count} x ${warning}` : warning;
+        ul.appendChild(li);
+    }
+    div.appendChild(ul);
+
+    return div;
+}
+
+export function addWarningsTab(warnings) {
+    // Get rid of stale warnings to avoid confusion.
+    tabManager.closeTab('warnings-tab');
+    if (warnings.length === 0) return;
+    tabManager.addTab('warnings-tab', "Warnings", warningsTabContent(warnings), true, true);
 }

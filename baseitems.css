@@ -260,6 +260,29 @@ body {
     word-break: break-word;
 }
 
+.tab-warnings {
+    color: var(--md-sys-color-on-surface);
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 900px;
+}
+
+.tab-warnings p {
+    margin: 0 0 4px 0;
+}
+
+.tab-warnings ul {
+    margin: 0;
+    padding-left: 24px;
+}
+
+.tab-warnings li {
+    margin: 2px 0;
+    word-break: break-word;
+    font-family: monospace;
+    color: var(--md-sys-color-error);
+}
+
 .bi-viewer {
     display: flex;
     gap: 12px;

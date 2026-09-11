@@ -1,4 +1,4 @@
-import { addTextTab, addComparisonTab } from './uiTabs.js';
+import { addTextTab, addComparisonTab, addWarningsTab } from './uiTabs.js';
 import { addBaseItemsTab } from './uiBaseItems.js';
 import { loadJson, saveJson, importData, exportFiles, compareJson, getState, getDetails, hasDetails } from './dataStore.js';
 
@@ -117,11 +117,13 @@ function importDataFiles() {
     importDialog.close();
     readFileAsText(dictionaryFile, (dictionaryText) => {
         readFileAsText(detailsFile, (detailsText) => {
-            importData(detailsText, dictionaryText);
+            const warnings = importData(detailsText, dictionaryText);
             // Show raw data for debug purposes, likely deprecated in the future.
             addTextTab('dictionary-tab', "Base_Items.ms", dictionaryText);
             addTextTab('details-tab', "Details.details", detailsText, true, false);
             showTabs();
+            // Warning tabs added last so it takes focus.
+            addWarningsTab(warnings);
         });
     });
 }
