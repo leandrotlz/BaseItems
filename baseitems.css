@@ -447,14 +447,58 @@ body {
     background-color: var(--md-sys-color-surface-container-high);
 }
 
-.bi-edit {
-    margin: 0;
+.bi-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     padding: 8px;
-    white-space: pre-wrap;
+}
+
+.bi-card {
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--md-sys-color-on-primary-fixed);
+    font-size: 13px;
+}
+
+.bi-card-header {
+    padding: 8px 10px;
+}
+
+.bi-card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--md-sys-color-primary);
+}
+
+.bi-card-short-help {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.bi-card-body {
+    padding: 8px 10px;
+    background-color: var(--md-sys-color-on-secondary);
+    color: var(--md-sys-color-on-secondary-container);
+    line-height: 1.5;
     word-break: break-word;
-    color: var(--md-sys-color-on-surface);
-    font-family: monospace;
+}
+
+.bi-card-footer {
+    padding: 8px 10px;
+    background-color: var(--md-sys-color-on-secondary-fixed);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.bi-card-tag {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background-color: var(--md-sys-color-on-primary);
+    color: var(--md-sys-color-on-secondary-container);
     font-size: 12px;
+    white-space: nowrap;
 }
 
 .import-dialog {

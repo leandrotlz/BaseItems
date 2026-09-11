@@ -24,8 +24,9 @@ let dictionaryFile = null;
 let detailsFile = null;
 
 function enableButtons() {
+    const enabled = hasDetails();
     for (const btn of [saveJsonBtn, exportDataBtn, compareJsonBtn]) {
-        if (hasDetails()) {
+        if (enabled) {
             btn.removeAttribute("disabled");
         } else {
             btn.setAttribute("disabled", "");
@@ -80,7 +81,7 @@ function exportData() {
 function showTabs() {
     // Show JSON output for debug purposes, likely deprecated in the future.
     addTextTab('json-data-tab', "JSON Data", saveJson(), true, false);
-    addBaseItemsTab(getState().Details, true);
+    addBaseItemsTab(getState(), true);
     enableButtons();
 }
 

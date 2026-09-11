@@ -8,13 +8,16 @@ let draggedRow = null;
 
 let searchInput = null;
 
-let jsonOutput = null;
+let cardsOutput = null;
 let currentDetails = null;
+let itemData = null;
 
-export function addBaseItemsTab(details, activate) {
+export function addBaseItemsTab(state, activate) {
+    const { Details: details, Data: data } = state;
     if (!Array.isArray(details)) return;
 
     currentDetails = details;
+    itemData = (data !== null && typeof data === 'object') ? data : {};
     selectedRows = new Set();
     anchorRow = null;
     draggedRow = null;
@@ -36,10 +39,9 @@ export function addBaseItemsTab(details, activate) {
 
     const editPanel = document.createElement('div');
     editPanel.className = 'bi-edit-panel';
-    jsonOutput = document.createElement('pre');
-    jsonOutput.className = 'bi-edit';
-    jsonOutput.textContent = '[]';
-    editPanel.appendChild(jsonOutput);
+    cardsOutput = document.createElement('div');
+    cardsOutput.className = 'bi-cards';
+    editPanel.appendChild(cardsOutput);
 
     content.appendChild(listPanel);
     content.appendChild(editPanel);
@@ -196,7 +198,49 @@ function setSelected(rows) {
 
 function refreshEditPanel() {
     const selected = itemRows().filter(row => selectedRows.has(row));
-    jsonOutput.textContent = JSON.stringify(selected.map(row => row._item), null, 2);
+    cardsOutput.replaceChildren(...selected.map(row => createItemCard(row._item)));
+}
+
+function createItemCard(item) {
+    const card = document.createElement('div');
+    card.className = 'bi-card';
+
+    const header = document.createElement('div');
+    header.className = 'bi-card-header';
+
+    const name = document.createElement('div');
+    name.className = 'bi-card-name';
+    name.textContent = item.DisplayName || item.Name || "(None)";
+    header.appendChild(name);
+
+    const shortHelp = document.createElement('div');
+    shortHelp.className = 'bi-card-short-help';
+    shortHelp.textContent = item.DisplayShortHelp ?? '';
+    header.appendChild(shortHelp);
+
+    card.appendChild(header);
+
+    const help = document.createElement('div');
+    help.className = 'bi-card-body';
+    if (typeof item.DisplayHelp === 'string') help.innerHTML = item.DisplayHelp;
+    card.appendChild(help);
+
+    const footer = document.createElement('div');
+    footer.className = 'bi-card-footer';
+    const storedTags = typeof item.Name === 'string'
+        ? itemData[item.Name.toLowerCase()]?.tags
+        : undefined;
+    if (Array.isArray(storedTags)) {
+        for (const tag of storedTags) {
+            const chip = document.createElement('span');
+            chip.className = 'bi-card-tag';
+            chip.textContent = tag;
+            footer.appendChild(chip);
+        }
+    }
+    card.appendChild(footer);
+
+    return card;
 }
 
 function handleDragStart(e, row) {
