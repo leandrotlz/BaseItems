@@ -1,4 +1,4 @@
-function generatorString() {
+export function generatorString() {
     return "baseitems.pages.dev " + new Date().toISOString().slice(0, 10);
 }
 
@@ -12,47 +12,6 @@ export function detailLabel(item) {
     if (item.DisplayTabName) parts.push(item.DisplayTabName);
     if (item.DisplayName) parts.push(item.DisplayName);
     return (parts.length > 0 ? parts.join(' > ') + ' ' : '') + `(${item.Name})`;
-}
-
-export function detailsToJson(details, tags = {}) {
-    return JSON.stringify({ Schema: "BaseItems", Generator: generatorString(), Details: details, Tags: tags }, null, 2);
-}
-
-export function getDetails(jsonData) {
-    if (jsonData === null || typeof jsonData !== 'object') return null;
-    if (jsonData.Schema !== 'BaseItems') return null;
-    return Array.isArray(jsonData.Details) ? jsonData.Details : null;
-}
-
-export function getTags(jsonData) {
-    const tags = jsonData?.Tags;
-    if (tags === null || typeof tags !== 'object' || Array.isArray(tags)) return {};
-    return tags;
-}
-
-function extractTags(displayHelp) {
-    if (typeof displayHelp !== 'string') return [];
-    const tagsIndex = displayHelp.indexOf('Tags:');
-    if (tagsIndex === -1) return [];
-
-    // The tags section runs from "Tags:" until it finds a Tab: or Name: section.
-    // <br>, commas and = (used by #tint-area) are separators.
-    const section = displayHelp.slice(tagsIndex + 'Tags:'.length).replace(/<br>|,|=/g, ' ');
-    const tags = new Set();
-    for (const token of section.split(/\s+/)) {
-        if (token.startsWith('Tab:') || token.startsWith('Name:')) break;
-        if (token.startsWith('#')) tags.add(token.toLowerCase());
-    }
-    return [...tags];
-}
-
-export function mergeTags(tags, details) {
-    for (const item of details) {
-        for (const tag of extractTags(item?.DisplayHelp)) {
-            if (!(tag in tags)) tags[tag] = {};
-        }
-    }
-    return tags;
 }
 
 export function searchTokens(text) {

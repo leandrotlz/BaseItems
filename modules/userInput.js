@@ -1,9 +1,6 @@
-import { texParser, generateFiles, ParseDetailDict } from './texParser.js';
-import { msParser } from './msParser.js';
-import { compareDetails } from './jsonCompare.js';
 import { addTextTab, addComparisonTab } from './uiTabs.js';
 import { addBaseItemsTab } from './uiBaseItems.js';
-import { detailsToJson, getDetails, getTags, mergeTags } from './utils.js';
+import { loadJson, saveJson, importData, exportFiles, compareJson, getState, getDetails, hasDetails } from './dataStore.js';
 
 const dictionaryFileInput = document.getElementById('dictionary-file-input');
 const detailsFileInput = document.getElementById('details-file-input');
@@ -23,16 +20,12 @@ const chooseDetailsBtn = document.getElementById('choose-details-file');
 const dictionaryFileName = document.getElementById('dictionary-file-name');
 const detailsFileName = document.getElementById('details-file-name');
 
-let pstrings = {};
-let details = {};
-let tags = {};
 let dictionaryFile = null;
 let detailsFile = null;
 
 function enableButtons() {
-    const hasData = Array.isArray(details) ? details.length > 0 : Object.keys(details).length > 0;
     for (const btn of [saveJsonBtn, exportDataBtn, compareJsonBtn]) {
-        if (hasData) {
+        if (hasDetails()) {
             btn.removeAttribute("disabled");
         } else {
             btn.setAttribute("disabled", "");
@@ -73,62 +66,40 @@ function downloadFile(fileName, content, type) {
 }
 
 function exportJson() {
-    downloadFile('Details.json', detailsToJson(details, tags), 'application/json');
+    downloadFile('Details.json', saveJson(), 'application/json');
 }
 
 function exportData() {
-    const { rawText, dictionary } = generateFiles(details, ParseDetailDict);
+    const { rawText, dictionary } = exportFiles();
     addTextTab('details-tab', "Details.details", rawText, true, false);
     addTextTab('dictionary-tab', "Base_Items.ms", dictionary, true, false);
     downloadFile('Details.details', rawText, 'text/plain');
     downloadFile('Base_Items.ms', dictionary, 'text/plain');
 }
 
-function loadDictionary(rawContent) {
-    addTextTab('dictionary-tab', "Base_Items.ms", rawContent);
-
-    pstrings = msParser(rawContent);
-}
-
-function loadDetails(rawContent) {
-    details = texParser(rawContent, ParseDetailDict, pstrings);
-    // New tags found in DisplayHelp are added as placeholders; existing
-    // entries (potentially edited in a previously loaded JSON) are kept.
-    mergeTags(tags, details);
-
-    addTextTab('details-tab', "Details.details", rawContent, true, false);
-
-    addTextTab('json-data-tab', "JSON Data", detailsToJson(details, tags), true, false);
-
-    addBaseItemsTab(details, true);
+function showTabs() {
+    // Show JSON output for debug purposes, likely deprecated in the future.
+    addTextTab('json-data-tab', "JSON Data", saveJson(), true, false);
+    addBaseItemsTab(getState().Details, true);
     enableButtons();
 }
 
-function loadJson(jsonData) {
-    const newDetails = getDetails(jsonData);
-    if (!newDetails) {
+function loadJsonData(jsonData) {
+    if (!loadJson(jsonData)) {
         alert("JSON file is invalid.");
         return;
     }
-    // A JSON load replaces the tags entirely.
-    details = newDetails;
-    tags = getTags(jsonData);
-
-    addTextTab('json-data-tab', "JSON Data", detailsToJson(details, tags), true, false);
-
-    addBaseItemsTab(details, true);
-    enableButtons();
+    showTabs();
 }
 
 function showComparison(jsonData) {
     const newDetails = getDetails(jsonData);
-    if (!Array.isArray(details) || !newDetails) {
+    if (!hasDetails() || !newDetails) {
         alert("JSON file is invalid.");
         return;
     }
 
-    const result = compareDetails(details, newDetails, ParseDetailDict);
-    addComparisonTab('json-comparison-tab', "JSON Comparison", result);
+    addComparisonTab('json-comparison-tab', "JSON Comparison", compareJson(newDetails));
 }
 
 function openImportDialog() {
@@ -146,8 +117,11 @@ function importDataFiles() {
     importDialog.close();
     readFileAsText(dictionaryFile, (dictionaryText) => {
         readFileAsText(detailsFile, (detailsText) => {
-            loadDictionary(dictionaryText);
-            loadDetails(detailsText);
+            importData(detailsText, dictionaryText);
+            // Show raw data for debug purposes, likely deprecated in the future.
+            addTextTab('dictionary-tab', "Base_Items.ms", dictionaryText);
+            addTextTab('details-tab', "Details.details", detailsText, true, false);
+            showTabs();
         });
     });
 }
@@ -190,7 +164,7 @@ export function addListeners() {
     jsonFileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (!file) return;
-        readJsonFile(file, loadJson);
+        readJsonFile(file, loadJsonData);
     });
 
     compareJsonBtn.addEventListener('click', () => {
